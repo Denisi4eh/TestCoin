@@ -1,95 +1,63 @@
-                            },
-                            classes: ['alert-danger']
-                        }
-                    }
-                });
-                Asset.createElement('cardName', 'nameoncard', {
-                    placeholder: 'Name on card',
-                    styles: {
-                        base: {
-                            styles: {
-                                'color': 'black',
-                                'width': '100%',
-                                'border-color': 'cccccc',
-                            },
-                            classes: ['form-control', 'form-control-lg']
-                        },
-                        error: {
-                            styles: {
-                                'border-color': 'red',
-                            },
-                            classes: ['alert-danger']
-                        }
-                    }
-                });
-            });
-            Asset.addEventListener('change', function (e) {
-                if (e.detail.error) {
-                    var text = getErrorMessage(e.detail.errorType);
-                    document.getElementById("error_" + e.detail.type).innerText = text;
-                } else {
-                    document.getElementById("error_" + e.detail.type).innerText = '';
-                }
-            });
-            Asset.addEventListener('submit', function (e) {
-                if (e.detail) {
-                    if (e.detail.validationError) {
-                        document.getElementById("processing").style.display = "none";
-                        document.getElementById("carddetails").style.display = "block";
-                        for (var type in e.detail.typesError) {
-                            var text = getErrorMessage(e.detail.responseMessage);
-                            document.getElementById("error_" + type).innerText = text;
-                        }
-                    } else if (e.detail.errorCode == 0) {
-                        if (e.detail.htmlIframeForm) {
-                            // var e = document.createElement('div');
-                            // e.innerHTML = e.detail.htmlIframeForm;
-                            // document.body.appendChild(e);
-                            var form = document.createElement('div');
-                            form.innerHTML = e.detail.htmlIframeForm;
-                            document.body.appendChild(form);
-                            document.forms['AssetPayments_form_submit'].submit();
-
-                        } else if (e.detail.transactionStateCode == 1) {
-                            document.getElementById("orderId").innerText = e.detail.transactionId;
-                            document.getElementById("processing").style.display = "none";
-                            document.getElementById("successmessage").style.display = "block";
-                        } else {
-                            document.getElementById("orderId").innerText = e.detail.transactionId;
-                            document.getElementById("errorMessage").innerText = e.detail.responseMessage;
-                            document.getElementById("processing").style.display = "none";
-                            document.getElementById("failedmessage").style.display = "block";
-                        }
-                    } else {
-                        document.getElementById("errorMessage").innerText = e.detail.errorCode == null ? e.detail.responseMessage : e.detail.errorCode;
-                        document.getElementById("orderId").innerText = e.detail.transactionId;
-                        document.getElementById("processing").style.display = "none";
-                        document.getElementById("failedmessage").style.display = "block";
-                    }
-                }
-            });
-            function getErrorMessage(errorType) {
-                var text = 'This field can not be empty';
-                if (errorType == 'card') { // errorType ['empty', 'card', 'expiry', 'cvv']
-                    text = 'Please enter a valid credit card number';
-                } else if (errorType == 'expiry') {
-                    text = 'Please enter a valid expiration date';
-                } else if (errorType == 'cvv') {
-                    text = 'Please enter a valid CVV';
-                }
-                return text;
-            };
-
-            var form = document.getElementById('paymentform');
-            form.addEventListener("submit", myFunction);
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Clicker</title>
+    <style>
+        button {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            font-size: 16px;
+            display: block;
+            margin: 250px auto 0 auto;
+            transform-origin: center;
+            transition: transform 0.2s;
+            position: relative;
         }
 
-        function myFunction(e) {
-            e.preventDefault();
-            Asset.createPayment();
-            document.getElementById("carddetails").style.display = "none";
-            document.getElementById("processing").style.display = "block";
-        };
+        button:active {
+            transform: scale(0.9);
+        }
+
+        .coin {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            opacity: 1;
+            transition: top 1s, opacity 1s;
+            z-index: 1;
+            color: black; /* Добавлено для видимости текста */
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center;"><span id="count">0</span>₽</h1>
+    <button onclick="incrementCounter(event)">Click Me</button>
+
+    <script>
+        let counter = 0;
+
+        function incrementCounter(event) {
+            counter++;
+            document.getElementById("count").innerText = counter;
+
+            let coin = document.createElement("div");
+            coin.className = "coin";
+            coin.innerHTML = "+1₽";
+            coin.style.top = (event.clientY - 30) + "px";
+            coin.style.left = (event.clientX - 15) + "px";
+            document.body.appendChild(coin);
+
+            setTimeout(() => {
+                coin.style.top = "20%";
+                coin.style.opacity = "0";
+            }, 10);
+
+            setTimeout(() => {
+                coin.remove();
+            }, 1000);
+        }
     </script>
 </body>
 </html>
